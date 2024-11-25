@@ -1,0 +1,39 @@
+\subsection{一步写出PF-ODE}
+
+这个section想要实现只要给出一个通用的加噪公式:
+$$
+p(\mathbf{x}_{t}|\mathbf{x}_{0})=
+\mathcal{N}\bigg(s(t)\mathbf{x}_{0}, s^{2}(t)\sigma^{2}(t)\mathbf{I}\bigg)
+$$
+
+哪怕SDE里的$f(\cdot ), g(\cdot)$不知道, 都可以直接写出对应的PF-ODE.
+
+写出PF-ODE后, 就可以根据Euler方法求解, 从一个噪声图像$\mathbf{x}_{t}$求出原始图像$\mathbf{x}_{0}$.
+
+\hspace*{\fill}
+
+回顾上一个section得到的SDE, 通过一个超级复杂的推导过程，可以通过section得到的SDE得到对应的反向去噪ODE(概率流常微分方程PF-ODE):
+
+$$
+d\mathbf{x}_{t}=\bigg[f(t)\mathbf{x}_{t}-\frac{1}{2}g^{2}(t)\nabla_{\mathbf{x}_{t}}\log p_{t}(\mathbf{x}_{t})\bigg]dt
+$$
+首先根据$f(t), g(t)$和$\sigma(t), s(t)$的关系可得:
+$$
+\begin{cases}
+s(t)=e^{\int_{0}^{t}f(r)dr}\\
+\ln(s(t))=\int_{0}^{t}f(r)dr
+\end{cases}\Longrightarrow
+f(t)=\frac{\dot{s}(t)}{s(t)}
+$$
+
+$$
+\begin{cases}
+    \sigma(t)=\sqrt{\int_{0}^{t}\frac{g^{2}(r)}{s^{2}(r)}dr} \\
+    \sigma^{2}(t)=\int_{0}^{t}\frac{g^{2}(r)}{s^{2}(r)}dr
+\end{cases}\Longrightarrow
+g(t)=s(t)\sqrt{2\sigma(t)\dot{\sigma}(t)}
+$$
+
+看似已经完成了目标但是在反向去噪的PF-ODE中还有一个梯度项$\nabla_{\mathbf{x}_{t}}\log p_{t}(\mathbf{x}_{t})$,
+也就是说现在最大的问题是$p_{t}(\mathbf{x}_{t})$是未知的, 只要知道了$p_{t}\mathbf{x}_{t}$,就可以直接采样了！
+
