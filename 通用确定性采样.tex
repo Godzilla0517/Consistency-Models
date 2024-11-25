@@ -1,0 +1,25 @@
+\subsection{通用确定性采样}
+
+1.2中的问题是要预测score, 各种扩散模型在这一步的操作如下
+$$
+\begin{cases}
+    \text{SMLD}: s_{\theta} \longrightarrow \nabla_{\mathbf{x}_{t}}(\log(\cdot)) \\
+    \text{DDPM/DDIM}: \varepsilon_{\theta} \longrightarrow \varepsilon \\
+    \text{FM/RF}: v_{\theta}\longrightarrow v
+\end{cases}
+$$
+这个section的目的是想把上面这些方法也统一起来.用一个$D_{\theta}$作为去噪网络.$D_{\theta}$的输入是噪声, 和时间步.
+
+更换符号:
+
+$D_{\theta}$的输入$\mathbf{x}=\mathbf{y}+\mathbf{n}$, $\mathbf{y}$是原始图像, $\mathbf{n}$为噪声, $\sigma$是噪声强度, 和时间等价, 因此训练的Loss为:
+
+$$
+\mathbb{E}_{\mathbf{y}\sim p_{data}, \mathbf{n}\sim\mathcal{N}(0, \sigma^{2}\mathbf{I})}
+||D_{\theta}(\mathbf{y}+\mathbf{n}; \sigma)-\mathbf{y}||^{2}_{2}
+$$
+
+去噪网络最理想的状态:
+$$
+D_{\theta}(\mathbf{y}+\mathbf{n}; \sigma) = \mathbf{y}
+$$

@@ -35,5 +35,33 @@ g(t)=s(t)\sqrt{2\sigma(t)\dot{\sigma}(t)}
 $$
 
 看似已经完成了目标但是在反向去噪的PF-ODE中还有一个梯度项$\nabla_{\mathbf{x}_{t}}\log p_{t}(\mathbf{x}_{t})$,
-也就是说现在最大的问题是$p_{t}(\mathbf{x}_{t})$是未知的, 只要知道了$p_{t}\mathbf{x}_{t}$,就可以直接采样了！
+也就是说现在最大的问题是$p_{t}(\mathbf{x}_{t})$是未知的, 只要知道了$p_{t}(\mathbf{x}_{t})$,就可以直接采样了！
+
+\hspace*{\fill}
+
+于是经过了漫长的推导过程:
+
+$$
+p_{t}(\mathbf{x}_{t}) = s^{-d}(t)\big[p_{data}\ast \mathcal{N}(0, \sigma^{2}(t)\mathbf{I})\big]\bigg(\frac{\mathbf{x}_{t}}{s(t)}\bigg)
+$$
+上式中$\ast$表示卷积, d是空间的维数.此时把得到的式子全部带入到反向去噪的PF-ODE:
+$$
+\begin{aligned}
+    d\mathbf{x}_{t} &= \bigg[f(t)\mathbf{x}_{t}-\frac{1}{2}g^{2}(t)\nabla_{\mathbf{x}_{t}}\log p_{t}(\mathbf{x}_{t})\bigg]dt \\
+    &=\bigg[\frac{\dot{s}(t)}{s(t)}\mathbf{x}_{t}-s^{2}(t)\sigma(t)\dot{\sigma}(t)
+    \nabla_{\mathbf{x}_{t}}\log\bigg(
+        s^{-d}(t)\big[p_{data}\ast \mathcal{N}(0, \sigma^{2}(t)\mathbf{I})\big]\bigg(\frac{\mathbf{x}_{t}}{s(t)}\bigg)
+        \bigg)\bigg]dt \\
+    &=\bigg[\frac{\dot{s}(t)}{s(t)}\mathbf{x}_{t}-s^{2}(t)\sigma(t)\dot{\sigma}(t)
+    \bigg(
+        \nabla_{\mathbf{x}_{t}}\log s^{-d}(t) + \nabla_{\mathbf{x}_{t}}\log p\bigg(\frac{\mathbf{x}_{t}}{s(t)};\sigma(t)\bigg)
+        \bigg)\bigg]dt \\
+    &=\bigg[\frac{\dot{s}(t)}{s(t)}\mathbf{x}_{t}-s^{2}(t)\sigma(t)\dot{\sigma}(t)
+    \nabla_{\mathbf{x}_{t}}\log p\bigg(\frac{\mathbf{x}_{t}}{s(t)};\sigma(t)\bigg)\bigg]dt
+\end{aligned}
+$$
+上式中, 仅仅依赖$s(t), \sigma(t)$就可以直接写出PF-ODE,  而不显示依赖$f(t), g(t)$, 此时可以根据Euler等数值方法进行确定性采样.
+
+但是此时还是要预测score.
+
 
