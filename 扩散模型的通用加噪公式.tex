@@ -1,0 +1,101 @@
+\section{Karras的EDM}
+\subsection{扩散模型的通用加噪公式}
+
+1. Flow Matching
+
+Flow Matching 的一步加噪公式:
+
+$$
+\mathbf{x}_{t}=(1-t)\mathbf{x}_{0}+t\varepsilon
+$$
+
+其中$\mathbf{x}_{0}$是原始图像, $\varepsilon$是高斯噪声, $\varepsilon \sim \mathcal{N}(0, \mathbf{I})$
+
+写成概率分布形式
+
+$$
+p(\mathbf{x}_{t}|\mathbf{x}_{0}) = \mathcal{N}\bigg((1-t)\mathbf{x}_{0}, t^{2}\mathbf{I}\bigg)
+$$
+
+\hspace*{\fill}
+
+2. Score Matching
+
+Score Matching 的一步加噪公式:
+
+$$
+\mathbf{x}_{t}=\mathbf{x}_{0}+\mathbf{\sigma}_{t}\varepsilon, \quad \text{其中}\mathbf{\sigma}_{t}\text{表示}\sigma \text{是}t \text{的函数}
+$$
+
+写成概率分布形式
+
+$$
+p(\mathbf{x}_{t}|\mathbf{x}_{0}) = \mathcal{N}\bigg(\mathbf{x}_{0}, \sigma^{2}_{t}\mathbf{I}\bigg)
+$$
+
+\hspace*{\fill}
+
+3. DDPM与DDIM
+
+DDPM与DDIM的一步加噪公式:
+
+$$
+\mathbf{x}_{t}=\sqrt{\bar{\alpha}_{t}}\mathbf{x}_{0}+\sqrt{1-\bar{\alpha}_{t}} \varepsilon
+$$
+写成概率分布形式
+$$
+p(\mathbf{x}_{t}|\mathbf{x}_{0}) = \mathcal{N}\bigg(\sqrt{\bar{\alpha}_{t}}\mathbf{x}_{0}, (1-\bar{\alpha}_{t})\mathbf{I}\bigg)
+$$
+
+\hspace*{\fill}
+
+4. 通用加噪公式
+
+对比上述三个概率形式的加噪公式, 可以将这三个式子建模为:
+
+$$
+p(\mathbf{x}_{t}|\mathbf{x}_{0})=
+\mathcal{N}\bigg(s(t)\mathbf{x}_{0}, s^{2}(t)\sigma^{2}(t)\mathbf{I}\bigg)
+$$
+
+上述的通用形式对应一个随机微分方程(SDE), 这个方程的解可以描述$\mathbf{x}_{t}$的分布的变化.
+$$
+d\mathbf{x}_{t}=f(\mathbf{x}_{t}, t)dt+g(t)d\mathbf{w}
+$$
+
+根据DDPM和SMLD的推导结果有:$f(\mathbf{x}_{t}, t)=f(t)\mathbf{x}_{t}$, 并且$f(t): \mathbb{R}^{1}\to \mathbb{R}^{1}$
+
+\newpage
+
+因此此时的SDE变为:
+
+$$
+d\mathbf{x}_{t}=f(t)\mathbf{x}_{t}dt+g(t)d\mathbf{w}
+$$
+
+现在是已知$f(t), g(t)$, 推导出通用加噪公式中的$s(t), \sigma (t)$, 即正态分布的期望和方差.经过一系列的推导可以得到:
+
+$$
+\begin{cases}
+    s(t)=e^{\int_{0}^{t}f(r)dr} \\
+    s^{2}(t) = e^{\int_{0}^{t}2f(r)dr} \\
+    \frac{1}{s^{2}(t)} = e^{\int_{0}^{t}-2f(r)dr} \\
+    \sigma(t)=\int_{0}^{t}\frac{g^{2}(r)}{s^{2}(r)}dr
+\end{cases}
+$$
+
+此时意味着只要知道如下一个SDE的$f(t), g(t)$:
+
+$$d\mathbf{x}_{t}=f(t)\mathbf{x}_{t}dt+g(t)d\mathbf{w}$$
+
+便可以得到一个扩散模型的加噪公式:
+
+$$
+p(\mathbf{x}_{t}|\mathbf{x}_{0})=
+\mathcal{N}\bigg(s(t)\mathbf{x}_{0}, s^{2}(t)\sigma^{2}(t)\mathbf{I}\bigg)
+$$
+加噪公式中的$\mathbf{x}_{0}$是原始图像, $\mathbf{x}_{0} \sim \mathcal{N}(\mathbf{x}_{0}, 0)$
+
+同样的, 只要知道$s(t),\sigma(t)$也可以推导出$f(t), g(t)$
+
+至此，扩散模型大一统!

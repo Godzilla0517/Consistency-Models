@@ -1,18 +1,23 @@
-\documentclass[12pt, a4paper]{article}
-\usepackage{graphicx} % Required for inserting images
-\usepackage{ctex}
+\documentclass[UTF8,a4paper,12pt]{ctexart}
 \usepackage[colorlinks, linkcolor=black]{hyperref}
-
-\title{Consistency Models}
-\author{我是一只哥斯拉}
-\date{November 2024}
+\usepackage[left=2.50cm, right=2.50cm, top=2.50cm, bottom=2.50cm]{geometry}
+\usepackage{fontenc}
+\usepackage{graphicx}
+% \usepackage{unicode-math}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{pythonhighlight}
 
 \begin{document}
 
-\maketitle
-\newpage
+\setlength{\parindent}{0pt}
+% \setmainfont{Cambria}
+% \setmathfont{Cambria Math}
+
+
 \tableofcontents
 \newpage
-\input{扩散模型SDE公式推导}
+
+\input{扩散模型的通用加噪公式}
 
 \end{document}
